@@ -1,0 +1,38 @@
+# ============================================================
+# 数据（大文件不入库；见 data/README.md、data/manifest.json）
+# 注意：.gitignore 不支持行尾注释，注释必须独占一行。
+# ============================================================
+data/raw/
+data/cache/
+data/*.npz
+data/*.meta.json
+
+# ============================================================
+# 模型与产物（可由脚本重建；体积大）
+# ============================================================
+artifacts/*.pt
+artifacts/*.npz
+artifacts/*.pkl
+results/_smoke/
+results/_smoke_eval/
+results/**/*.pt
+results/**/*.npz
+src/ae_repro/artifacts/*.npz
+src/ae_repro/_tmp_contract/
+
+# ============================================================
+# Python / IDE / 临时
+# ============================================================
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+.idea/
+.vscode/
+_tools_*.py
+*.log

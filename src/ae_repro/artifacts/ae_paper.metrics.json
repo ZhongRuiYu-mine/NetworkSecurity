@@ -1,0 +1,199 @@
+{
+  "generated_at": "2026-09-20 17:49:50",
+  "python": "3.12.6",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "data": "C:\\Users\\yeyix\\Documents\\ChatGPT\\网安大作业\\ae_repro\\_cache\\cicids_sample.npz",
+  "detector": "AePaperDetector (AUTO.pdf stage-1 AE reproduction)",
+  "paper_reference": {
+    "AE_row_Table1": {
+      "ROC_AUC": 0.949,
+      "precision": 0.82,
+      "recall": 0.79,
+      "F1": 0.8
+    },
+    "dataset_of_paper": "blockchain metaverse transactions (not CICIDS2017)"
+  },
+  "metrics": {
+    "main_rule": "percentile",
+    "threshold": 2.309189796447754,
+    "at_threshold": {
+      "threshold": 2.309189796447754,
+      "precision": 0.7580012389015073,
+      "recall": 0.5688826902216023,
+      "f1": 0.6499645892351273,
+      "accuracy": 0.84184,
+      "false_positive_rate": 0.06319081253032835,
+      "detection_rate": 0.5688826902216023,
+      "specificity": 0.9368091874696717,
+      "balanced_accuracy": 0.752845938845637,
+      "fp_per_1000_flows": 63.19081253032835,
+      "precision_at_1pct": 0.08335554593904045,
+      "precision_at_0.1pct": 0.008931144581773593,
+      "tp": 3671,
+      "fp": 1172,
+      "fn": 2782,
+      "tn": 17375,
+      "n": 25000,
+      "n_attack": 6453,
+      "n_benign": 18547,
+      "roc_auc": 0.8451112607220137,
+      "pr_auc": 0.6617471111843305
+    },
+    "at_evt_threshold": {
+      "threshold": 4.953852824419801,
+      "precision": 0.8569702826769752,
+      "recall": 0.5496668216333488,
+      "f1": 0.6697507552870091,
+      "accuracy": 0.86008,
+      "false_positive_rate": 0.03191890871839111,
+      "detection_rate": 0.5496668216333488,
+      "specificity": 0.9680810912816089,
+      "balanced_accuracy": 0.7588739564574789,
+      "fp_per_1000_flows": 31.918908718391112,
+      "precision_at_1pct": 0.14817259941651947,
+      "precision_at_0.1pct": 0.016945853201863002,
+      "tp": 3547,
+      "fp": 592,
+      "fn": 2906,
+      "tn": 17955,
+      "n": 25000,
+      "n_attack": 6453,
+      "n_benign": 18547,
+      "roc_auc": 0.8451112607220137,
+      "pr_auc": 0.6617471111843305
+    },
+    "at_best_f1_threshold": {
+      "threshold": 3.631189117814383,
+      "precision": 0.8295402822030041,
+      "recall": 0.5648535564853556,
+      "f1": 0.6720752281736886,
+      "accuracy": 0.85772,
+      "false_positive_rate": 0.0403838895778293,
+      "detection_rate": 0.5648535564853556,
+      "specificity": 0.9596161104221707,
+      "balanced_accuracy": 0.7622348334537632,
+      "fp_per_1000_flows": 40.3838895778293,
+      "precision_at_1pct": 0.12379378870711236,
+      "precision_at_0.1pct": 0.013807778334645098,
+      "tp": 3645,
+      "fp": 749,
+      "fn": 2808,
+      "tn": 17798,
+      "n": 25000,
+      "n_attack": 6453,
+      "n_benign": 18547,
+      "roc_auc": 0.8451112607220137,
+      "pr_auc": 0.6617471111843305
+    },
+    "evt": {
+      "u": 1.4444542884826659,
+      "xi": -0.25,
+      "beta": 5.51432977065444,
+      "zeta_u": 0.1,
+      "alpha": 0.05,
+      "threshold": 4.953852824419801,
+      "n_exceed": 6000,
+      "fallback": false
+    },
+    "embedding": {
+      "dim": 4,
+      "feature_idx": [
+        0,
+        48,
+        66,
+        77
+      ],
+      "feature_names": [
+        "Destination Port",
+        "URG Flag Count",
+        "Init_Win_bytes_forward",
+        "Idle Min"
+      ]
+    },
+    "attribution_top15": [
+      {
+        "feature": "Init_Win_bytes_forward",
+        "mean_sq_residual": 0.046322505083444016
+      },
+      {
+        "feature": "URG Flag Count",
+        "mean_sq_residual": 0.044081585948554616
+      },
+      {
+        "feature": "Destination Port",
+        "mean_sq_residual": 0.03706748014178393
+      },
+      {
+        "feature": "Idle Min",
+        "mean_sq_residual": 0.024635969803994844
+      },
+      {
+        "feature": "SYN Flag Count",
+        "mean_sq_residual": 0.022807996726023533
+      },
+      {
+        "feature": "Init_Win_bytes_backward",
+        "mean_sq_residual": 0.019679805598542013
+      },
+      {
+        "feature": "Fwd IAT Total",
+        "mean_sq_residual": 0.019134607356304813
+      },
+      {
+        "feature": "Flow IAT Max",
+        "mean_sq_residual": 0.018563329689152246
+      },
+      {
+        "feature": "Fwd Packets/s",
+        "mean_sq_residual": 0.015477245143195746
+      },
+      {
+        "feature": "PSH Flag Count",
+        "mean_sq_residual": 0.013527263840287742
+      },
+      {
+        "feature": "ACK Flag Count",
+        "mean_sq_residual": 0.012766187302107618
+      },
+      {
+        "feature": "Bwd IAT Total",
+        "mean_sq_residual": 0.012376981421166671
+      },
+      {
+        "feature": "Fwd IAT Mean",
+        "mean_sq_residual": 0.01149406500418826
+      },
+      {
+        "feature": "Flow Duration",
+        "mean_sq_residual": 0.010445826254544733
+      },
+      {
+        "feature": "Idle Mean",
+        "mean_sq_residual": 0.01038696409156172
+      }
+    ],
+    "latency": {
+      "n_samples": 25000,
+      "total_seconds": 0.05963990000054764,
+      "throughput_samples_per_sec": 419182.4600606379,
+      "ms_per_batch256": 0.6085704081688534,
+      "ms_per_sample": 0.0023855960000219055
+    },
+    "fit_meta": {
+      "n_normal": 60000,
+      "n_train": 51000,
+      "n_val": 9000,
+      "epochs_run": 250,
+      "best_val_mse": 0.005714999046176672,
+      "train_seconds": 433.2267040000006,
+      "device": "cpu",
+      "n_params": 6274,
+      "threshold_calibrated": 2.309189796447754,
+      "threshold_best_f1": 3.631189117814383,
+      "best_f1_on_calibration_set": 0.6720752281736886,
+      "benign_score_mean": 0.8769868612289429,
+      "benign_score_std": 22.49453353881836,
+      "benign_score_robust_scale": 0.2737398679783116
+    }
+  }
+}

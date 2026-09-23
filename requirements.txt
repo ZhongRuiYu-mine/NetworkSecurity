@@ -1,0 +1,39 @@
+# 依赖（合并后仓库统一锁定）
+#
+# 说明
+# ----
+# * 合并前四个包各自带一份 requirements，且互相冲突（见 docs/DECISIONS.md）。
+#   本文件是**唯一**的依赖来源，版本按实际验证过的环境锁定。
+# * 实测环境：Windows + Python 3.11.6；另一台机器在 Python 3.12.6 上验证过
+#   ae_repro。GPU 版 torch 与 CPU 版只有速度差别，不影响结果复算。
+#
+# 安装（推荐）
+# ----------
+#   pip install -r requirements.txt
+#   pip install -e .            # 让 agentenvs / icps_detection / ae_repro 可导入
+#
+# Windows + NVIDIA 显卡想要 CUDA 版 torch：
+#   pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cu128
+
+# ---- 核心（平台 + ae_repro + 检测器对比，缺一不可）----
+numpy==1.26.4
+pandas==2.3.2
+scikit-learn==1.5.2
+scipy==1.14.1
+matplotlib==3.8.4
+joblib==1.4.2
+tqdm==4.67.1
+
+# ---- 深度学习（平台内置 AE / ae_paper / ICPS 的 DPNet）----
+torch==2.10.0
+
+# ---- ICPS 方向（network 包）：parquet 数据 + pandapower 物理电网仿真 ----
+pyarrow==21.0.0
+# 注意：以下三个在本机**尚未安装**，scripts/run_fusion.py 与 pipeline_demo.py 跑不了，
+#       只影响 ICPS 方向的物理层仿真；检测器对比实验不依赖它们。
+# pandapower==3.5.4
+# pandera==0.33.1
+# geojson==3.3.0
+
+# ---- 可选：Gym 风格外壳（没有也能跑）----
+# gymnasium>=0.29

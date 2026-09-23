@@ -1,252 +1,101 @@
-# MADDPG 多智能体网络攻击分类 —— 环境与可插拔检测接口
+# netsec —— 网络安全大作业（四方向合并仓库）
 
-复现论文 *Adaptive Multiagent Reinforcement Learning Framework for Cyber Attack
-Detection and Tracking*（`papers/AdaptiveMultiagent.pdf`）里的 **Phase 2 / MADDPG**
-部分：多个智能体各自专注一类攻击（DDoS / PortScan / Bot / DoS / WebAttack），
-通过 **CTDE（集中式训练 + 分散式执行）** 协同完成攻击类型分类与响应决策。
+CICIDS2017 多机制入侵检测 + 可插拔检测器契约 + MADDPG 多智能体响应 + ICPS 两层融合。
 
-本阶段的目标是**搭好 agent–env 平台并预留防守方接口**，让三种检测机制
-（Isolation Forest / Kalman Filter / Autoencoder）可以随便换进来跑通对比实验。
-检测算法本身怎么写不是这里的事——环境只认一个固定契约。
+> 本仓库由四个平行目录（`chethuhn` / `network` / `safenetwork` / `ae_repro`）合并而成。
+> 合并范围、目录映射、每个非平凡决定见 **`docs/DECISIONS.md`**；
+> 曾经的缺口清单与证据见 `GAP_ANALYSIS.md`（在原工作区 `大三/网安/`）。
 
 ---
 
-## 1. 快速开始
+## 1. 30 秒上手
 
 ```powershell
-cd D:\NETWORK
-$env:PYTHONPATH = "D:\NETWORK"
-$PY = "D:\PycharmProjects\pythonProject\.venv\Scripts\python.exe"
+$env:PYTHONPATH = "$PWD\src"      # 脚本自带引导块，这一步其实可省
+pip install -r requirements.txt
 
-# ① 环境自检（四种检测器 + 环境 + MADDPG 更新 + 热替换），一分钟内跑完
-& $PY verify_pipeline.py
+# ① 平台 + 契约自检（约 1 分钟；退出码 0 = 环境可用）
+python scripts/verify_pipeline.py
+python -m agentenvs.detectors.templates
 
-# ② 真实数据预处理（一次解析，落盘复用）
-& $PY prepare_data.py --out data/cicids_sample.npz --rows-per-file 20000
+# ② 生成规范数据包（协议 v1，约 20 秒；需要 data/raw/cicids2017 有原始 CSV）
+python -m ae_repro.data_prep
 
-# ③ 三种检测机制分别训练（对比实验）
-& $PY train.py --data bundle --detector if          --episodes 200 --plots
-& $PY train.py --data bundle --detector kalman      --episodes 200 --plots
-& $PY train.py --data bundle --detector autoencoder --episodes 200 --plots
+# ③ ★ 四种检测机制同口径对比（一条命令产出主表）
+python scripts/eval_all_detectors.py
+
+# ④ 端到端策略训练（MADDPG + 指定检测器）
+python scripts/train.py --data bundle --detector if --episodes 200 --out results/if
 ```
-
-`verify_pipeline.py` 通过 = 平台可用。训练超参先不用纠结，默认值已对齐论文
-Table 2（agents=5, lr=1e-4, γ=0.99, buffer=500k, batch=128, τ=0.001）。
-
----
 
 ## 2. 目录结构
 
 ```
-agentenvs/
-├── cyber_defense_env.py     ★ Gym 风格多智能体环境（观测/动作/奖励/指标）
-├── detectors/               ★ 防守方接口（可插拔检测机制）
-│   ├── base.py                  DetectorBase 抽象契约 + 注册表 + 工厂 make_detector
-│   ├── isolation_forest_detector.py   IF：在良性流量上 fit，score_samples 取负
-│   ├── kalman_detector.py             Kalman：随机游走状态空间 + 新息(NIS)打分
-│   ├── autoencoder_detector.py        AE：良性流量重构误差
-│   ├── null_detector.py               空检测器（消融 baseline / 验证解耦）
-│   └── templates.py                   ★ 自定义检测器模板（最小可用 / 有状态 / 包装已有模型）
-├── data_loader.py           CICIDS2017 流式采样/归一化/切分 + 合成数据 + .npz 落盘
-└── taxonomy.py              标签归一化 + 攻击类别表 + 智能体分工生成
-algorithms/
-├── networks.py              Actor（分类头 + 连续响应头）/ 集中式 Critic
-├── replay_buffer.py         共享经验池
-└── maddpg.py                MADDPG 训练器（CTDE、目标网络软更新、集中式更新）
-utils/metrics.py             Accuracy / Precision / Recall / F1 / Kappa / 检测率 / 混淆矩阵
-docs/INTERFACE.md            ★ 完整接口文档（契约、维度约束、参数手册、替换 Recipe、排查表）
-prepare_data.py              CSV → .npz 数据包
-train.py                     训练 / 评估入口
-verify_pipeline.py           环境与接口自检
+netsec/
+├── README.md / PROTOCOL.md / docs/        文档；PROTOCOL.md 是唯一评测口径来源
+├── src/
+│   ├── agentenvs/        ★ MADDPG 多智能体环境 + 可插拔检测器
+│   │   └── detectors/        base(契约) / if / kalman / autoencoder / ae_paper / null / templates
+│   ├── algorithms/       MADDPG（CTDE）、Actor/Critic、回放池
+│   ├── utils/            指标与分层抽样
+│   ├── ae_repro/         论文复现版 AE（AUTO.pdf）+ EVT/GPD 阈值标定 + 契约自检
+│   └── icps_detection/   ICPS 两层融合（物理层状态估计 + DPNet 网络层）
+├── scripts/              所有可执行入口（自带 sys.path 引导）
+├── data/                 数据层（大文件不入 git，见 data/README.md）
+├── results/              产物：对比表、图表、策略权重
+├── docs/reports/         各方向报告（IF docx / ae_repro 报告 …）
+├── legacy/chethuhn-IF/   历史独立脚本，仅供参考，不纳入主路径
+└── tests/                冒烟测试（pytest）
 ```
 
-> 接口细节、各检测器全部参数、常见替换任务和报错排查见 **`docs/INTERFACE.md`**。
-> 想加自己的检测算法：抄 `agentenvs/detectors/templates.py`，然后
-> `python -m agentenvs.detectors.templates` 自检。
+## 3. 四种检测机制，一个契约
 
----
+任何检测器只要实现 `DetectorBase.fit()` / `score_batch()`，就能换进环境而**不改**
+MADDPG 与环境代码。四种机制统一 `embed_dim=4`（`signal_dim=7`），观测维度一致：
 
-## 3. ★ 防守方接口（三种检测机制怎么接）
-
-### 3.1 契约
-
-任何检测器只要实现这三件事，就能直接塞进环境，**MADDPG 与环境代码一行都不用改**：
-
-```python
-class MyDetector(DetectorBase):
-    embed_dim = 0                       # 可选 embedding 维度
-
-    def fit(self, X_normal, X_test=None, y_test=None): ...   # 在良性流量上训练/标定
-    def score_batch(self, X) -> DetectorOutput: ...          # 对 (n, d) 打分
-    # reset(self)                       可选：有状态检测器在 episode 边界清状态
-    # save/load(path)                   可选：落盘避免重复训练
-```
-
-`DetectorOutput` 是环境唯一消费的东西，字段固定：
-
-| 字段 | 形状 | 含义 |
-|---|---|---|
-| `score` | (n,) | 连续异常分，**越高越异常**（方向要自己校正） |
-| `flag` | (n,) | 0/1 二值告警 |
-| `trust` | (n,) | [0,1] 可信度（Kalman 用 NIS 一致性，IF/AE 用分数显著度） |
-| `embedding` | (n,k) / None | 可选：让 critic 看到"为什么判异常" |
-
-环境把 signal 向量 `[score, flag, trust, embedding...]` 拼到每个智能体观测后面，
-所以**信号维度必须统一**：`detector.signal_dim == 3 + embed_dim`。
-三种机制的原始 embedding 维度不同（IF=0 / Kalman=4 / AE=特征数），
-用 `detector_embed_dim=4` 统一即可：环境会把该维度应用到检测器上（不会静默零填充），
-这样观测维度一致，策略网络可以复用/对比。
-
-完整契约说明、维度约束、各检测器全部参数、替换 Recipe 与排查表见 **`docs/INTERFACE.md`**；
-可直接运行的模板（最小可用 / 有状态 / 包装已有模型）见 `agentenvs/detectors/templates.py`。
-
-### 3.2 三种用法
-
-```python
-from agentenvs import make_env, make_detector, register_detector
-
-# ① 按名字构造（注册表里内置 if / kalman / autoencoder / null）
-env = make_env(ds, detector="kalman", num_agents=5)
-
-# ② 用自定义超参
-det = make_detector("kalman", mode="frozen")     # 或 mode="decay" / "forget"
-env = make_env(ds, detector=det)
-
-# ③ 自己写一个（对接你已有的检测代码也可以，只要是这个契约）
-@register_detector("mydet")
-class MyDetector(DetectorBase):
-    embed_dim = 4
-    def fit(self, X_normal, **kw): self.model = fit_something(X_normal); return self
-    def score_batch(self, X): ...  # -> DetectorOutput
-
-# ④ 直接把已 fit 好的对象交给环境（auto_fit_detector=False 跳过训练）
-env = CyberDefenseEnv(ds.X_train, ds.y_train, detector=my_fitted_det,
-                      X_normal_for_detector=ds.X_normal_train, auto_fit_detector=False)
-
-# ⑤ 运行期热替换（同一套策略权重下做 A/B，观测量纲不变）
-env.set_detector(make_detector("autoencoder", embed_dim=4))
-```
-
-命令行只改一个参数即可切换：
-
-```powershell
-& $PY train.py --data bundle --detector if          --out outputs/if
-& $PY train.py --data bundle --detector kalman      --out outputs/kalman
-& $PY train.py --data bundle --detector autoencoder --out outputs/autoencoder
-& $PY train.py --data bundle --detector null        --out outputs/baseline_no_detector
-```
-
-### 3.3 三种检测机制的实现要点
-
-| 机制 | 打分 | 阈值标定 | embedding | 备注 |
+| 注册 key | 机制 | 打分 | 阈值（主口径） | 备注 |
 |---|---|---|---|---|
-| **IF** | `-score_samples` | 良性分位数 / 有标签时 F1 扫描 | 可选：树路径长度 | `n_jobs=1`，沙箱里 joblib 多进程会被拒 |
-| **Kalman** | 逐维新息的均值（NIS） | 同上 | 标准化新息 `innov/√S` | 有状态、流式；`mode` 见下 |
-| **AE** | 平均重构误差 | 同上 | 逐维重构残差 | PyTorch，仅在良性流量上训练 |
+| `if` | Isolation Forest | `-score_samples` | 良性分位数 / F1 扫描 | 轻量、可解释 |
+| `kalman` | Kalman 滤波 | 逐维 NIS 新息 | 同上 | 有状态、流式；`mode=frozen/decay/forget` |
+| `autoencoder` | 平台内置 AE | 平均重构误差 | 同上 | 64-32 / latent 8 / 原始 MSE |
+| `ae_paper` | 论文复现版 AE | 逐特征标准化残差 | 良性分位数 / **EVT-GPD** | 32-16-8 / latent 4；`ae_repro` 交付 |
+| `null` | 空检测器 | 恒 0 | — | 消融 baseline |
 
-Kalman 的 `mode` 很关键，做对比实验时值得在论文里说明：
+> `ae_paper` 的接入方式见 `docs/DECISIONS.md` §3.2：它同时存在于
+> `src/agentenvs/detectors/ae_paper_detector.py`（供平台使用）与
+> `src/ae_repro/ae_detector.py`（供独立复现使用），契约检查优先用**真契约**。
 
-* `decay`（默认）：基线缓慢跟随，既能检出突变也能适应正常分布漂移；
-* `frozen`：基线冻结在良性训练集上（无时序记忆），i.i.d. 表格流量上表现最好，**与 IF/AE 最公平**；
-* `forget`：基线快速跟随（等效窗口 `window` 条流量），只检出**突发**偏离——
-  持续性攻击会把基线拉过去，之后不再告警。这是纯时序跟踪模型的固有局限。
+## 4. 评测口径（★ 引用数字前必读）
 
----
+**`PROTOCOL.md` 是唯一口径来源。** 两条硬规则：
 
-## 4. 环境接口
+1. **评估集不得包含检测器拟合过的样本。** 协议 v1 数据包里
+   `X_test ∩ X_normal_train` 逐位重复率 **0.70%**；合并前平台数据包是 **14.02%**
+   （4066/29000）——旧的"三方对比表"就是在这个自评口径下得到的。
+2. **主口径 = 良性分位数（α=0.05）**，`fit()` 只喂良性流量、不传 `y_test`。
+   F1 扫描（用测试标签选阈值）只能作为**乐观上界**并列报告。
+   同一个 IF 在两套口径下 F1 是 **0.591 vs 0.465**。
 
-```python
-from agentenvs import CyberDefenseEnv, EnvConfig, make_env
-
-env = make_env(ds, detector="if", num_agents=5, max_steps=100)
-print(env.describe())
-
-obs = env.reset()                                   # (num_agents, obs_dim)
-actions, class_idx, raws = maddpg.select_actions_raw(obs)
-next_obs, rewards, done, info = env.step_with_classes(actions, class_idx)
-metrics = env.episode_metrics()                     # acc / P / R / F1 / 检测率 / 误报率
-```
-
-**观测** `(num_agents, obs_dim)`，每行 = 
-`[归一化流量特征 d] + [检测器信号 3+embed_dim] + [focus one-hot num_classes]`
-
-**动作**（每个智能体）
-* `class_logits` → argmax 即攻击类型判定（离散；用 critic 优势加权的策略梯度学习）
-* `response` → 连续 1 维，tanh 后按 3 档解码：`0=监控 / 1=限流 / 2=阻断`
-
-> 为什么这么拆：DDPG 只能对连续动作求梯度，分类是离散决策。
-> 若把分类硬塞进连续动作向量（原骨架的做法）梯度无意义；
-> 现在连续部分（响应）走标准 DDPG 可微路径，离散部分（分类）走
-> REINFORCE + critic 优势基线，二者共享同一个集中式 critic。
-> 需要兼容旧布局时，`decode_actions` 也支持 `action_dim = num_classes + 1` 的连续向量。
-
-**奖励**（对齐论文 Reward function R_i，权重都在 `EnvConfig` 里可调）
-
-| 项 | 值 |
-|---|---|
-| 分类正确 | `+1`（命中本智能体专精类别再 `+specialist_bonus`） |
-| 分类错误 | `-1` |
-| 攻击流量响应：监控/限流/阻断 | `+0.5 / +0.75 / +1.0` |
-| 良性流量响应：监控/限流/阻断 | `+0.5 / -0.25 / -1.0`（越激进罚越重） |
-| 与检测器告警一致 / 不一致 | `±0.2`（把检测器信号变成可学的塑形奖励） |
-
----
+主表：`results/detector_comparison.md`（`python scripts/eval_all_detectors.py` 生成）。
 
 ## 5. 数据
 
-`chethuhn/network-intrusion-dataset/versions/1/*.csv`（CICIDS2017，78 特征）。
-`data_loader.py` 会：
+`data/raw/` 用 junction 挂载原始 CICIDS2017（约 1.1 GB，零额外磁盘占用，不入 git）。
+换机器 / 重新获取见 `data/README.md`；`data/manifest.json` 记录来源、形状、sha256。
 
-1. 按文件**流式分块采样**（不用把 200MB+ 的 CSV 整个读进内存）；
-2. 归一化 `Label`（原始文件里的 `Web Attack ? Brute Force` 是编码损坏，统一成 `WebAttack`）；
-3. 只用 **Monday 良性流量** 做 Min-Max 归一化（论文 Eq.1）和检测器训练；
-4. 按类别分层切分 train/test，训练集里良性流量下采样到 `--normal-ratio`；
-5. 样本数不足 `min_attack_rows` 的攻击族并入 `Other` 兜底类，不会退化成 BENIGN。
+## 6. 已知边界（诚实清单）
 
-默认类别空间：`['BENIGN','DDoS','PortScan','DoS','WebAttack','Other']`，
-前 5 类正好分给 5 个专注型智能体（`taxonomy.default_agents`）。
-`--rows-per-file` 调大类别更全（Bot/WebAttack 样本很稀疏，20000 才比较稳）。
-
----
-
-## 6. 训练产物
-
-`outputs/<detector>/` 下：`best.pt` / `last.pt`（权重）、`history.json`（每轮指标）、
-`eval_<detector>.json`（各智能体 + 投票 + 检测器的完整评估）、`curves.png`（`--plots`）。
-
-评估既看**单个智能体**（accuracy / macro-F1 / 检测率 / 误报率 / 判定分布），
-也看**多智能体投票**（集成判定，平票偏向攻击侧），还会单独报**检测器本身**的
-检测率与误报率——这样三种机制的差异才能拆开看。
-
-评估子集是**按类别分层抽样**的（`utils.metrics.stratified_subset`）：真实测试集里
-BENIGN 占 ~80%，若直接取前 N 条会全是良性流量，准确率虚高而 F1 恒为 0。
-
----
+| 项 | 状态 |
+|---|---|
+| Kalman / AE / null 的**端到端策略训练** | ❌ 未跑（只有 IF 有策略权重），见 `PROTOCOL.md` §6 |
+| ICPS 融合层接入平台契约 | ❌ 未做（物理量测与 78 维流特征语义不同，需专门设计） |
+| ICPS 融合的 oracle 泄漏 | ❌ 未修（`run_fusion.py` 仍用干净真值作参考状态） |
+| 带符号 embedding vs `normalize_obs` 裁剪 | ❌ 未裁决（`PROTOCOL.md` §6 第 1 条） |
+| ICPS 全链路可跑 | ❌ 本机缺 `pandapower`/`pandera`/`geojson` |
+| Kalman / AE / ICPS / MADDPG 报告 | ❌ 只有检测器对比表 + IF docx + ae_repro 报告 |
+| LICENSE | ❌ 待组内决定 |
 
 ## 7. 依赖
 
-已装在 `D:\PycharmProjects\pythonProject\.venv`：`numpy pandas scikit-learn scipy torch
-matplotlib joblib tqdm`；`gymnasium`/`gym` 只是可选外壳（没有也能跑）。
-
-两个环境相关的注意点（非代码 bug）：
-
-* `IsolationForestDetector` 默认 `n_jobs=1`：在受限沙箱里 joblib 的多进程后端会
-  因命名管道被拒而报 `PermissionError`；在你自己的机器上可以传 `n_jobs=-1`。
-* 所有产出（权重、图、数据包）都写在**工作区内**（`outputs/`、`data/`），
-  不要用系统临时目录。
-
----
-
-## 8. 已知边界（留给下一阶段）
-
-* **验收标准**：`verify_pipeline.py` 全部通过 = 平台可用（环境 + 四种检测器 +
-  MADDPG 集中式更新 + 存档 + 热替换），这已经跑通；训练超参、收敛效果、分类精度
-  属于下一阶段的任务，当前默认值只保证"能跑起来、不报错、指标可测"。
-* 环境每个 step 只处理一条流量，智能体之间是**共享观测**（`_get_observations` 里
-  留了差异化观测的扩展位）；若要模拟不同网段/不同传感器的部分可观测性，
-  在 `_get_observations` 里按 agent 拆分特征子集即可。
-* PPO 响应阶段（论文 Phase 3）与 DDQN 检测阶段（Phase 1）尚未实现——
-  检测阶段现在由可插拔检测器承担，响应阶段暂由 actor 的连续动作头承担。
-* 分类头用 REINFORCE + critic 优势基线学习，早期易偏向 BENIGN（类别不均衡所致），
-  调参时可关注 `MADDPGConfig.entropy_coef`、`class_lr_scale` 与环境的
-  `reward_specialist_bonus` / `reward_detector_align`。
+见 `requirements.txt`（统一锁定）。核心：numpy / pandas / scikit-learn / scipy /
+matplotlib / joblib / torch；ICPS 方向额外需要 pyarrow + pandapower。

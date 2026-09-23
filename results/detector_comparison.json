@@ -1,0 +1,527 @@
+{
+  "protocol": "v1",
+  "generated_at": "2026-09-23 22:07:00",
+  "protocol_doc": "PROTOCOL.md",
+  "env": {
+    "python": "3.11.6",
+    "numpy": "1.26.4",
+    "sklearn": "1.5.2",
+    "torch": "2.10.0+cu128",
+    "platform": "Windows-10-10.0.26100-SP0"
+  },
+  "data": {
+    "path": "D:\\higher\\netsec\\data\\cicids_sample.npz",
+    "X_normal_train": [
+      60000,
+      78
+    ],
+    "X_train": [
+      36875,
+      78
+    ],
+    "X_test": [
+      25000,
+      78
+    ],
+    "class_names": [
+      "BENIGN",
+      "DDoS",
+      "PortScan",
+      "DoS",
+      "WebAttack",
+      "Other"
+    ],
+    "embed_dim": 4,
+    "seed": 42,
+    "smoke": false
+  },
+  "leakage": {
+    "n_test": 25000,
+    "n_duplicate": 176,
+    "duplicate_rate": 0.00704,
+    "target": "<=1%"
+  },
+  "detectors": {
+    "if": {
+      "key": "if",
+      "kwargs": {}
+    },
+    "kalman_frozen": {
+      "key": "kalman",
+      "kwargs": {
+        "mode": "frozen"
+      }
+    },
+    "kalman_decay": {
+      "key": "kalman",
+      "kwargs": {
+        "mode": "decay"
+      }
+    },
+    "autoencoder": {
+      "key": "autoencoder",
+      "kwargs": {}
+    },
+    "ae_paper": {
+      "key": "ae_paper",
+      "kwargs": {}
+    },
+    "null": {
+      "key": "null",
+      "kwargs": {}
+    }
+  },
+  "results": [
+    {
+      "name": "if",
+      "registry_key": "if",
+      "kwargs": {
+        "embed_dim": 4,
+        "seed": 42
+      },
+      "embed_dim": 4,
+      "signal_dim": 7,
+      "threshold_mode": null,
+      "main": {
+        "threshold": 0.5332604646682739,
+        "precision": 0.6744538834951457,
+        "recall": 0.34449093444909346,
+        "f1": 0.4560467740281055,
+        "accuracy": 0.78788,
+        "false_positive_rate": 0.0578530220520839,
+        "detection_rate": 0.34449093444909346,
+        "specificity": 0.9421469779479161,
+        "balanced_accuracy": 0.6433189561985048,
+        "fp_per_1000_flows": 57.853022052083894,
+        "precision_at_1pct": 0.056734903140802206,
+        "precision_at_0.1pct": 0.005925231325046488,
+        "tp": 2223,
+        "fp": 1073,
+        "fn": 4230,
+        "tn": 17474,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.7327405387752132,
+        "pr_auc": 0.5261432851968213
+      },
+      "optimistic": {
+        "threshold": 0.485479713502683,
+        "precision": 0.6610200364298725,
+        "recall": 0.5623740895707423,
+        "f1": 0.6077200033492423,
+        "accuracy": 0.8126,
+        "false_positive_rate": 0.10033967757588828,
+        "detection_rate": 0.5623740895707423,
+        "specificity": 0.8996603224241118,
+        "balanced_accuracy": 0.731017205997427,
+        "fp_per_1000_flows": 100.33967757588829,
+        "precision_at_1pct": 0.05357983739756111,
+        "precision_at_0.1pct": 0.005579013277456463,
+        "tp": 3629,
+        "fp": 1861,
+        "fn": 2824,
+        "tn": 16686,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.7327405387752132,
+        "pr_auc": 0.5261432851968213
+      },
+      "per_class_detection_rate": {
+        "DDoS": 0.1860652436568667,
+        "PortScan": 0.0,
+        "DoS": 0.600887674974394,
+        "WebAttack": 0.010101010101010102,
+        "Other": 0.0
+      },
+      "flag_rate": 0.13184,
+      "timing_s": {
+        "fit": 3.1,
+        "infer": 0.252
+      },
+      "score_stats": {
+        "min": 0.330234169960022,
+        "max": 0.7439349889755249,
+        "mean": 0.4093655971944332
+      },
+      "n_duplicate_with_normal_train": 176
+    },
+    {
+      "name": "kalman_frozen",
+      "registry_key": "kalman",
+      "kwargs": {
+        "mode": "frozen",
+        "embed_dim": 4,
+        "seed": 42
+      },
+      "embed_dim": 4,
+      "signal_dim": 7,
+      "threshold_mode": null,
+      "main": {
+        "threshold": 2.3362932574083994,
+        "precision": 0.6541382667964947,
+        "recall": 0.5205330853866419,
+        "f1": 0.5797376596479117,
+        "accuracy": 0.8052,
+        "false_positive_rate": 0.09575672615517335,
+        "detection_rate": 0.5205330853866419,
+        "specificity": 0.9042432738448266,
+        "balanced_accuracy": 0.7123881796157343,
+        "fp_per_1000_flows": 95.75672615517335,
+        "precision_at_1pct": 0.05205097158147511,
+        "precision_at_0.1pct": 0.00541198745890545,
+        "tp": 3359,
+        "fp": 1776,
+        "fn": 3094,
+        "tn": 16771,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.7841341815451016,
+        "pr_auc": 0.5520114117046591
+      },
+      "optimistic": {
+        "threshold": 0.7230874955398694,
+        "precision": 0.572884012539185,
+        "recall": 0.7929645126297846,
+        "f1": 0.6651933701657459,
+        "accuracy": 0.79396,
+        "false_positive_rate": 0.2056936431767941,
+        "detection_rate": 0.7929645126297846,
+        "specificity": 0.7943063568232059,
+        "balanced_accuracy": 0.7936354347264953,
+        "fp_per_1000_flows": 205.6936431767941,
+        "precision_at_1pct": 0.03748065349787147,
+        "precision_at_0.1pct": 0.0038441002469671343,
+        "tp": 5117,
+        "fp": 3815,
+        "fn": 1336,
+        "tn": 14732,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.7841341815451016,
+        "pr_auc": 0.5520114117046591
+      },
+      "per_class_detection_rate": {
+        "DDoS": 0.6745871929118002,
+        "PortScan": 0.006729475100942127,
+        "DoS": 0.5732331853875042,
+        "WebAttack": 0.0,
+        "Other": 0.0
+      },
+      "flag_rate": 0.205,
+      "timing_s": {
+        "fit": 2.63,
+        "infer": 1.223
+      },
+      "score_stats": {
+        "min": 0.00188131770119071,
+        "max": 730.5225830078125,
+        "mean": 1.767737739693355
+      },
+      "n_duplicate_with_normal_train": 176
+    },
+    {
+      "name": "kalman_decay",
+      "registry_key": "kalman",
+      "kwargs": {
+        "mode": "decay",
+        "embed_dim": 4,
+        "seed": 42
+      },
+      "embed_dim": 4,
+      "signal_dim": 7,
+      "threshold_mode": null,
+      "main": {
+        "threshold": 2.3362932574083994,
+        "precision": 0.6514944325063489,
+        "recall": 0.5168138850147218,
+        "f1": 0.5763912893190459,
+        "accuracy": 0.80392,
+        "false_positive_rate": 0.09618806275947593,
+        "detection_rate": 0.5168138850147218,
+        "specificity": 0.9038119372405241,
+        "balanced_accuracy": 0.710312911127623,
+        "fp_per_1000_flows": 96.18806275947593,
+        "precision_at_1pct": 0.05147839837546556,
+        "precision_at_0.1pct": 0.005349559057283923,
+        "tp": 3335,
+        "fp": 1784,
+        "fn": 3118,
+        "tn": 16763,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.7795330238160655,
+        "pr_auc": 0.5472430711598174
+      },
+      "optimistic": {
+        "threshold": 0.6817647407633022,
+        "precision": 0.5585676037483266,
+        "recall": 0.7759181775918178,
+        "f1": 0.649542712589998,
+        "accuracy": 0.78388,
+        "false_positive_rate": 0.21334986790316493,
+        "detection_rate": 0.7759181775918178,
+        "specificity": 0.7866501320968351,
+        "balanced_accuracy": 0.7812841548443265,
+        "fp_per_1000_flows": 213.34986790316492,
+        "precision_at_1pct": 0.03543400959825124,
+        "precision_at_0.1pct": 0.0036272700705429783,
+        "tp": 5007,
+        "fp": 3957,
+        "fn": 1446,
+        "tn": 14590,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.7795330238160655,
+        "pr_auc": 0.5472430711598174
+      },
+      "per_class_detection_rate": {
+        "DDoS": 0.6749899315344342,
+        "PortScan": 0.006729475100942127,
+        "DoS": 0.5646978490952543,
+        "WebAttack": 0.0,
+        "Other": 0.0
+      },
+      "flag_rate": 0.20436,
+      "timing_s": {
+        "fit": 3.08,
+        "infer": 1.253
+      },
+      "score_stats": {
+        "min": 4.223654104862362e-05,
+        "max": 730.5220947265625,
+        "mean": 1.767598682518298
+      },
+      "n_duplicate_with_normal_train": 176
+    },
+    {
+      "name": "autoencoder",
+      "registry_key": "autoencoder",
+      "kwargs": {
+        "embed_dim": 4,
+        "seed": 42
+      },
+      "embed_dim": 4,
+      "signal_dim": 7,
+      "threshold_mode": null,
+      "main": {
+        "threshold": 0.000505343487020582,
+        "precision": 0.716775181922635,
+        "recall": 0.5800402913373625,
+        "f1": 0.6411991434689507,
+        "accuracy": 0.83244,
+        "false_positive_rate": 0.07974335472043996,
+        "detection_rate": 0.5800402913373625,
+        "specificity": 0.9202566452795601,
+        "balanced_accuracy": 0.7501484683084613,
+        "fp_per_1000_flows": 79.74335472043995,
+        "precision_at_1pct": 0.0684443009875652,
+        "precision_at_0.1pct": 0.007228488227533846,
+        "tp": 3743,
+        "fp": 1479,
+        "fn": 2710,
+        "tn": 17068,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.8021334609964019,
+        "pr_auc": 0.7178869189591232
+      },
+      "optimistic": {
+        "threshold": 0.00031839020186475066,
+        "precision": 0.6818030050083472,
+        "recall": 0.6328839299550597,
+        "f1": 0.6564333360122158,
+        "accuracy": 0.829,
+        "false_positive_rate": 0.10276594597509031,
+        "detection_rate": 0.6328839299550597,
+        "specificity": 0.8972340540249097,
+        "balanced_accuracy": 0.7650589919899847,
+        "fp_per_1000_flows": 102.76594597509032,
+        "precision_at_1pct": 0.05856396431224952,
+        "precision_at_0.1pct": 0.006126892987963527,
+        "tp": 4084,
+        "fp": 1906,
+        "fn": 2369,
+        "tn": 16641,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.8021334609964019,
+        "pr_auc": 0.7178869189591232
+      },
+      "per_class_detection_rate": {
+        "DDoS": 0.6685461135722915,
+        "PortScan": 0.10363391655450875,
+        "DoS": 0.6845339706384431,
+        "WebAttack": 0.010101010101010102,
+        "Other": 0.0
+      },
+      "flag_rate": 0.20888,
+      "timing_s": {
+        "fit": 50.94,
+        "infer": 0.029
+      },
+      "score_stats": {
+        "min": 6.329921234282665e-06,
+        "max": 0.13560734689235687,
+        "mean": 0.006658406280855779
+      },
+      "n_duplicate_with_normal_train": 176
+    },
+    {
+      "name": "ae_paper",
+      "registry_key": "ae_paper",
+      "kwargs": {
+        "embed_dim": 4,
+        "seed": 42
+      },
+      "embed_dim": 4,
+      "signal_dim": 7,
+      "threshold_mode": null,
+      "main": {
+        "threshold": 2.424140632152555,
+        "precision": 0.7638368705784436,
+        "recall": 0.5688826902216023,
+        "f1": 0.6521005417887912,
+        "accuracy": 0.84332,
+        "false_positive_rate": 0.06119588073542891,
+        "detection_rate": 0.5688826902216023,
+        "specificity": 0.9388041192645711,
+        "balanced_accuracy": 0.7538434047430866,
+        "fp_per_1000_flows": 61.195880735428915,
+        "precision_at_1pct": 0.08583960983395766,
+        "precision_at_0.1pct": 0.009219607761050491,
+        "tp": 3671,
+        "fp": 1135,
+        "fn": 2782,
+        "tn": 17412,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.8473954630999281,
+        "pr_auc": 0.6649966041221205
+      },
+      "optimistic": {
+        "threshold": 4.21302773972204,
+        "precision": 0.8470123227156475,
+        "recall": 0.564543623121029,
+        "f1": 0.6775153431281384,
+        "accuracy": 0.86128,
+        "false_positive_rate": 0.03547743570388742,
+        "detection_rate": 0.564543623121029,
+        "specificity": 0.9645225642961126,
+        "balanced_accuracy": 0.7645330937085708,
+        "fp_per_1000_flows": 35.47743570388742,
+        "precision_at_1pct": 0.13847681316011742,
+        "precision_at_0.1pct": 0.015678935566283494,
+        "tp": 3643,
+        "fp": 658,
+        "fn": 2810,
+        "tn": 17889,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.8473954630999281,
+        "pr_auc": 0.6649966041221205
+      },
+      "per_class_detection_rate": {
+        "DDoS": 0.6677406363270237,
+        "PortScan": 0.005383580080753701,
+        "DoS": 0.6858996244452031,
+        "WebAttack": 0.0,
+        "Other": 0.0
+      },
+      "flag_rate": 0.19224,
+      "timing_s": {
+        "fit": 599.48,
+        "infer": 0.12
+      },
+      "score_stats": {
+        "min": 0.028141850605607033,
+        "max": 1110.8203125,
+        "mean": 4.074575523452387
+      },
+      "n_duplicate_with_normal_train": 176
+    },
+    {
+      "name": "null",
+      "registry_key": "null",
+      "kwargs": {
+        "embed_dim": 4
+      },
+      "embed_dim": 4,
+      "signal_dim": 7,
+      "threshold_mode": null,
+      "main": {
+        "threshold": 0.0,
+        "precision": 0.25812,
+        "recall": 1.0,
+        "f1": 0.4103265189330112,
+        "accuracy": 0.25812,
+        "false_positive_rate": 1.0,
+        "detection_rate": 1.0,
+        "specificity": 0.0,
+        "balanced_accuracy": 0.5,
+        "fp_per_1000_flows": 1000.0,
+        "precision_at_1pct": 0.01,
+        "precision_at_0.1pct": 0.001,
+        "tp": 6453,
+        "fp": 18547,
+        "fn": 0,
+        "tn": 0,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.5,
+        "pr_auc": 0.25812
+      },
+      "optimistic": {
+        "threshold": 0.0,
+        "precision": 0.25812,
+        "recall": 1.0,
+        "f1": 0.4103265189330112,
+        "accuracy": 0.25812,
+        "false_positive_rate": 1.0,
+        "detection_rate": 1.0,
+        "specificity": 0.0,
+        "balanced_accuracy": 0.5,
+        "fp_per_1000_flows": 1000.0,
+        "precision_at_1pct": 0.01,
+        "precision_at_0.1pct": 0.001,
+        "tp": 6453,
+        "fp": 18547,
+        "fn": 0,
+        "tn": 0,
+        "n": 25000,
+        "n_attack": 6453,
+        "n_benign": 18547,
+        "roc_auc": 0.5,
+        "pr_auc": 0.25812
+      },
+      "per_class_detection_rate": {
+        "DDoS": 0.0,
+        "PortScan": 0.0,
+        "DoS": 0.0,
+        "WebAttack": 0.0,
+        "Other": 0.0
+      },
+      "flag_rate": 0.0,
+      "timing_s": {
+        "fit": 0.0,
+        "infer": 0.0
+      },
+      "score_stats": {
+        "min": 0.0,
+        "max": 0.0,
+        "mean": 0.0
+      },
+      "n_duplicate_with_normal_train": 176
+    }
+  ]
+}

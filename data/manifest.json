@@ -1,0 +1,160 @@
+{
+  "dataset": "CICIDS2017",
+  "repo": "D:\\higher\\netsec",
+  "generated_at": "2026-09-23 21:57:47",
+  "protocol": "v1（见 PROTOCOL.md）",
+  "layout": {
+    "raw_csv_dir": {
+      "path": "data/raw/cicids2017",
+      "mounted_as": "junction",
+      "target": "D:\\higher\\大三\\网安\\chethuhn\\network-intrusion-dataset\\versions\\1",
+      "note": "合并时用 junction 挂载，零额外磁盘占用；原目录未改动"
+    },
+    "raw_parquet_dir": {
+      "path": "data/raw/cicids2017-parquet",
+      "mounted_as": "junction",
+      "target": "D:\\higher\\大三\\网安\\network\\dataset",
+      "note": "network（ICPS）方向自建的 77 维 parquet，与 78 维 CSV 版本不同"
+    },
+    "canonical_bundle": "data/cicids_sample.npz",
+    "canonical_meta": "data/cicids_sample.meta.json"
+  },
+  "regenerate": {
+    "bundle": "python -m ae_repro.data_prep",
+    "checksums": "python scripts/make_manifest.py",
+    "env_override": "NETSEC_DATA_DIR（整体重定向 data/）、NETSEC_RAW_DIR（只重定向原始 CSV）"
+  },
+  "canonical_bundle": {
+    "path": "data/cicids_sample.npz",
+    "bytes": 11909386,
+    "sha256": "784c2045176002c876359b58ee445be289579de632985a12f0c1b749027d524c",
+    "meta_sha256": "47b101ac1775e4ee46440cdc643b168f9fdca9c91ebc027483c697cf5ee95585",
+    "shapes": {
+      "X_normal_train": [
+        60000,
+        78
+      ],
+      "X_train": [
+        36875,
+        78
+      ],
+      "y_train": [
+        36875
+      ],
+      "X_test": [
+        25000,
+        78
+      ],
+      "y_test": [
+        25000
+      ]
+    },
+    "class_names": [
+      "BENIGN",
+      "DDoS",
+      "PortScan",
+      "DoS",
+      "WebAttack",
+      "Other"
+    ],
+    "normalization": "Min-Max，统计量仅来自 Monday 良性流量（论文 Eq.1）",
+    "eval_protocol": "评估集已排除 Monday 行（检测器拟合数据），避免自评"
+  },
+  "raw_csv": {
+    "n_files": 8,
+    "total_bytes": 884645759,
+    "files": [
+      {
+        "file": "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+        "bytes": 77123859,
+        "sha256": "6ff1580f5f81c0ae28a26f7631721018577f5f7c5e0feac28b795fcfe7b411ee"
+      },
+      {
+        "file": "Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+        "bytes": 76906168,
+        "sha256": "ca1824c51bfbb7b3c72290a11be04366ba8815878c6a1cc5c44cb1cee269e99b"
+      },
+      {
+        "file": "Friday-WorkingHours-Morning.pcap_ISCX.csv",
+        "bytes": 58316725,
+        "sha256": "53a41c24d570ea83b7ac55b2e94df94e7a8216aeb80a2af0246b6bc8bb543000"
+      },
+      {
+        "file": "Monday-WorkingHours.pcap_ISCX.csv",
+        "bytes": 176927918,
+        "sha256": "852c4beb34eda186f32561fa79df7a0747e92e1a6535b01270820dd9ffe17f34"
+      },
+      {
+        "file": "Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
+        "bytes": 83102436,
+        "sha256": "6bcda3857c2504676034e3ea57762d38393cc734cb377a726bd5cb153961b1b5"
+      },
+      {
+        "file": "Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv",
+        "bytes": 52023263,
+        "sha256": "d67066211fb1689c78406f1506f4c44704ecb92088353d5c96d96d6474eb819d"
+      },
+      {
+        "file": "Tuesday-WorkingHours.pcap_ISCX.csv",
+        "bytes": 135078995,
+        "sha256": "52b8692ae8c7d2ed04671fe2b98335693c0a92c7ab157d8c8b534d6523080851"
+      },
+      {
+        "file": "Wednesday-workingHours.pcap_ISCX.csv",
+        "bytes": 225166395,
+        "sha256": "893c27dc968bf7a8adef1689f90be55ca4a4dc3088fb63d6ff247ac56856df2a"
+      }
+    ]
+  },
+  "raw_parquet": {
+    "n_files": 8,
+    "total_bytes": 270655555,
+    "files": [
+      {
+        "file": "Benign-Monday-no-metadata.parquet",
+        "bytes": 56765918,
+        "sha256": "8190cf2ff746a50d25fa4c0452d258e00e06fb249fbde8ce386b4c297e4700a7"
+      },
+      {
+        "file": "Botnet-Friday-no-metadata.parquet",
+        "bytes": 19855151,
+        "sha256": "3477bd870829761079c252331f596859f0fc4ab35c4c195ed0cf3837c5f75d89"
+      },
+      {
+        "file": "Bruteforce-Tuesday-no-metadata.parquet",
+        "bytes": 46140640,
+        "sha256": "14a14762c7960975b70a52632c2ee9205e333402effd5f3b8473ffbb4827e833"
+      },
+      {
+        "file": "DDoS-Friday-no-metadata.parquet",
+        "bytes": 25302305,
+        "sha256": "835176e715b4bc2dba7000c78be052275fcbb9f28b1d7670eec0448db91eb132"
+      },
+      {
+        "file": "DoS-Wednesday-no-metadata.parquet",
+        "bytes": 68198756,
+        "sha256": "660577146c53fc467ccfa3124d5061e037238f03e936eb1fff914dba08d4104b"
+      },
+      {
+        "file": "Infiltration-Thursday-no-metadata.parquet",
+        "bytes": 23145829,
+        "sha256": "f933f2c6b1769a6194f8a2c86df582a67e5e551ac8fd035789f9b312c75336e9"
+      },
+      {
+        "file": "Portscan-Friday-no-metadata.parquet",
+        "bytes": 13594122,
+        "sha256": "9ce2d3982369bd9c9e9cabb296ccffaa493cc6233a750ba9e28c5b5403bdd4b0"
+      },
+      {
+        "file": "WebAttacks-Thursday-no-metadata.parquet",
+        "bytes": 17652834,
+        "sha256": "7db47b2bf97ad58c3556ee25e8e1eb1e697cd391670733833865d0e84d8ed82a"
+      }
+    ],
+    "known_issues": [
+      "PortScan 仅 1956 条（官方 158930，manifest 自述疑似被抽样）",
+      "Heartbleed 11 条、Infiltration 36 条、Bot 稀疏",
+      "77 维（含 Protocol），与 78 维 CSV 版本不可混用"
+    ]
+  }
+}

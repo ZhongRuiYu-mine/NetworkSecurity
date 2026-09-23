@@ -1,0 +1,21 @@
+# MADDPG 多智能体网络防御平台 —— 依赖（历史文件，已被取代）
+#
+# ⚠️ 本文件是合并前的平台依赖清单，保留作历史记录。
+#    依赖的**唯一**来源是仓库根的 requirements.txt（版本已锁定），
+#    原因见 docs/DECISIONS.md §3.5（合并前三份 requirements 互相冲突）。
+#
+# 目标环境：D:\PycharmProjects\pythonProject\.venv （Python 3.12）
+# 安装： & $PY -m pip install -r requirements.txt
+#
+# 实测可用版本（venv 里已装的版本）
+numpy>=1.26
+pandas>=2.0
+scikit-learn>=1.3
+scipy>=1.10
+torch>=2.0
+matplotlib>=3.7
+joblib>=1.3
+
+# 可选：Gym 风格外壳（没有也能跑，环境会退化成一个纯 Python 类）
+# gymnasium>=0.29
+# gym>=0.26
