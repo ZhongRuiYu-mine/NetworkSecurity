@@ -4,6 +4,7 @@
 |---|---|---|
 | `Isolation Forest.docx` | `safenetwork/Isolation Forest.docx`（原作者交付的 IF 英文报告） | ⚠️ **其表 5.1 的三方对比表已作废**，见下 |
 | `ae_repro_REPORT.md` | `ae_repro/results/REPORT.md`（AE 复现报告） | ✅ 有效；其"下一阶段"清单与本仓库 `PROTOCOL.md` §6 对应 |
+| `../results/method_analysis.md` / `.docx` | 由 `scripts/eval_policy_sweep.py` + `scripts/md_to_docx.py` 生成 | ✅ **本项目报告的第 5 章**（三方机制结果与分析） |
 
 ## 关于 `Isolation Forest.docx` 表 5.1（三方对比表）
 
@@ -26,12 +27,17 @@
 建议：把 docx 里的表 5.1 直接替换为 `results/detector_comparison.md` 的表 1 + 表 2，
 并在正文里注明口径变化。docx 本体保留为历史记录。
 
+**更完整的替换物**：`results/method_analysis.md`（+ `.docx`）。它不只给数字，还回答
+「成功率怎么定义」「每一次攻击是什么反应」「失败是机制层还是判定层的锅」
+「各机制适合什么场景」，是旧 docx 表 5.1 那三行数字**应该配套的整章正文**。
+
 ## 仍缺的报告
 
 | 方向 | 缺失内容 |
 |---|---|
-| Kalman | 无独立报告（原 docx 的三方对比里只有一行数字） |
-| Autoencoder（平台内置） | 无独立报告 |
+| Kalman | 无独立报告（原 docx 的三方对比里只有一行数字）；机制层数字见 `results/method_analysis.md` §5.4 |
+| Autoencoder（平台内置） | 同上，见 `results/method_analysis.md` §5.5（`ae_paper` 有独立报告） |
 | ICPS（`network`） | **完全没有文档**：无 README、无报告、无指标落盘 |
-| MADDPG 平台 | 无训练报告（只有 `history.json` 与 `eval_*.json`） |
+| MADDPG 平台 | 无训练报告（只有 `history.json` 与 `eval_*.json`）；且已有 IF 策略**已崩塌**，见 `results/method_analysis.md` §5.9 |
+| 策略层报告（三方机制各跑一遍 MADDPG） | ❌ 未跑，`PROTOCOL.md` §6 第 3 条 |
 | 项目级 | 无总结报告 / 演示材料 |

@@ -115,9 +115,27 @@
 
 ## 6. 本次**没有**做的事（避免误解）
 
-- ❌ 没有重训 MADDPG 策略（Kalman / AE / null 的策略对比仍缺，见 `PROTOCOL.md` §6 第 3 条）
+- ❌ 没有重训 MADDPG 策略（Kalman / AE / null 的策略对比仍缺，见 `PROTOCOL.md` §6 第 3 条）；
+  **已有的 IF 策略也已崩塌**，其数字不可当作 A 方法能力，见 `results/method_analysis.md` §5.9
 - ❌ 没有去掉 ICPS 融合的 oracle 泄漏（`run_fusion.py` 仍用干净真值作参考状态）
 - ❌ 没有裁决"带符号 embedding vs `normalize_obs` 裁剪"（`PROTOCOL.md` §6 第 1 条，需组内决定）
 - ❌ 没有跑 ICPS 全链路（本机缺 `pandapower`/`pandera`/`geojson`）
-- ❌ 没有补 Kalman / AE / ICPS / MADDPG 的报告（只产出了检测器对比表）
+- ❌ 没有补 ICPS / MADDPG 的报告
+- ❌ 没有统计过逐智能体的**响应动作分布**（监控/限流/阻断三档），见 `method_analysis.md` §5.9
 - ❌ 没有加 LICENSE（许可证由组内决定，未擅自指定）
+
+## 7. 报告章节的产出方式（合并后补记）
+
+需求方要的是「results 那一章的数据能不能跑出来」，因此本轮**新增的是报告正文，不是新模型**：
+
+| 决策 | 内容 |
+|---|---|
+| 交付物 | `results/method_analysis.md`（+ `.docx`），即「第 5 章 三种检测机制的结果与分析」 |
+| 为什么不是只给脚本 | 需求原文问的是「A 的成功率/整体表现/每次攻击的反应/横向对比/成败原因/适用场景」，这是一个**章节的提纲**，脚本本身回答不了 |
+| 「成功率」的定义 | 原仓库没有定义（`src/utils/metrics.py` docstring 里出现过 `success_rate` 但无实现）。定为「机制层 = 该类被告警的比例」为主口径，端到端只作下界；已写进 `PROTOCOL.md` §5.1 |
+| 失败归因怎么做的 | `scripts/eval_policy_sweep.py` 用三条**不训练**的判定规则（`detector` / `specialist` / `benign_only`）把「检测器没报警」与「分类判错」分开，得到四类互斥分解 |
+| 刻意**不**构造完美检测器上界 | 最初写过 `oracle`（完美 flag + 先验攻击类）规则，实测它的输出与常量规则**逐位相同**——那种"上界"是假的，已删除 |
+| 退化基线为什么恒判 BENIGN | 最初用"训练集多数类"，但训练集里 DoS(11717) 比 BENIGN(11062) 还多，argmax 得到 DoS，于是这个"什么都不判"的基线会白捡 DoS 的成功率。改成恒判 BENIGN，成功率按定义为 0，才是干净下界 |
+| 冒烟产物隔离 | `--smoke` 的输出自动改到 `results/_smoke/`（早期会覆盖正式产物，3000 行的数字曾被写进 `policy_sweep.md`） |
+| 数字可核对 | `scripts/verify_report_numbers.py` 把报告里手抄的每个数字与 JSON 源逐条比对（170 项），改报告或重跑产物后必须重跑它 |
+| 旧口径产物 | 合并前的 `safenetwork/.../outputs/` 已逐字节拷进 `results/_legacy_platform/`，**只允许与旧 docx 表 5.1 比较** |

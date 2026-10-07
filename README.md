@@ -24,6 +24,11 @@ python -m ae_repro.data_prep
 # ③ ★ 四种检测机制同口径对比（一条命令产出主表）
 python scripts/eval_all_detectors.py
 
+# ③b ★ 逐攻击反应 + 失败归因 + 报告章节（回答「成功率/每次攻击的反应/是谁的锅」）
+python scripts/eval_policy_sweep.py          # -> results/policy_sweep.{json,md}
+python scripts/md_to_docx.py                 # -> results/method_analysis.docx
+python scripts/verify_report_numbers.py      # 核对报告里引用的数字与 JSON 源
+
 # ④ 端到端策略训练（MADDPG + 指定检测器）
 python scripts/train.py --data bundle --detector if --episodes 200 --out results/if
 ```
@@ -42,7 +47,7 @@ netsec/
 │   └── icps_detection/   ICPS 两层融合（物理层状态估计 + DPNet 网络层）
 ├── scripts/              所有可执行入口（自带 sys.path 引导）
 ├── data/                 数据层（大文件不入 git，见 data/README.md）
-├── results/              产物：对比表、图表、策略权重
+├── results/              产物：对比表、报告章节、图表、策略权重
 ├── docs/reports/         各方向报告（IF docx / ae_repro 报告 …）
 ├── legacy/chethuhn-IF/   历史独立脚本，仅供参考，不纳入主路径
 └── tests/                冒烟测试（pytest）
@@ -78,6 +83,15 @@ MADDPG 与环境代码。四种机制统一 `embed_dim=4`（`signal_dim=7`），
 
 主表：`results/detector_comparison.md`（`python scripts/eval_all_detectors.py` 生成）。
 
+**报告章节**：`results/method_analysis.md`（+ `.docx`）是可直接贴进报告的
+「第 5 章 三种检测机制的结果与分析」，内容为：成功率定义与数值、整体表现、
+**每一次攻击的反应**、三方横向对比、成功/失败原因、场景选型建议，
+以及一份「还答不了什么」的诚实清单。
+其中 **§5.1.2 给出了本仓库此前不存在的「成功率」定义**，
+§5.7 给出了"机制层 vs 判定层"的失败归因分解。数据源是
+`results/detector_comparison.json` + `results/policy_sweep.json` +
+`src/ae_repro/results/repro_report.json`，可用 `scripts/verify_report_numbers.py` 逐条核对。
+
 ## 5. 数据
 
 `data/raw/` 用 junction 挂载原始 CICIDS2017（约 1.1 GB，零额外磁盘占用，不入 git）。
@@ -88,11 +102,13 @@ MADDPG 与环境代码。四种机制统一 `embed_dim=4`（`signal_dim=7`），
 | 项 | 状态 |
 |---|---|
 | Kalman / AE / null 的**端到端策略训练** | ❌ 未跑（只有 IF 有策略权重），见 `PROTOCOL.md` §6 |
+| 已有 IF 策略的**可信成功率** | ❌ 该策略已崩塌（投票准确率 0.0754、Kappa −0.0219、5 智能体全塌缩），数字是训练失败的度量，不是方法结论；见 `results/method_analysis.md` §5.9 |
+| 逐智能体的**响应动作分布**（监控/限流/阻断） | ❌ 从未评估过（`bin_response()` 有实现，无产物） |
 | ICPS 融合层接入平台契约 | ❌ 未做（物理量测与 78 维流特征语义不同，需专门设计） |
 | ICPS 融合的 oracle 泄漏 | ❌ 未修（`run_fusion.py` 仍用干净真值作参考状态） |
 | 带符号 embedding vs `normalize_obs` 裁剪 | ❌ 未裁决（`PROTOCOL.md` §6 第 1 条） |
 | ICPS 全链路可跑 | ❌ 本机缺 `pandapower`/`pandera`/`geojson` |
-| Kalman / AE / ICPS / MADDPG 报告 | ❌ 只有检测器对比表 + IF docx + ae_repro 报告 |
+| Kalman / AE / ICPS / MADDPG 报告 | ⚠️ 检测器机制层已有三方对比（`results/method_analysis.md`）；**策略层（MADDPG）仍无可用报告** |
 | LICENSE | ❌ 待组内决定 |
 
 ## 7. 依赖

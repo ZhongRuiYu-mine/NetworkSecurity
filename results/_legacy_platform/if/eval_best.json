@@ -1,0 +1,635 @@
+{
+  "n_samples": 5000,
+  "agents": [
+    {
+      "name": "agent_DDoS",
+      "id": 0,
+      "focus": "DDoS",
+      "accuracy": 0.6166,
+      "macro_f1": 0.024805354842323418,
+      "macro_precision": 0.02071796067200586,
+      "macro_recall": 0.031023410752290183,
+      "kappa": 0.029153551545717304,
+      "detection_rate": 0.3290267011197244,
+      "false_alarm_rate": 0.21437874446470434,
+      "mean_reward": 0.34153999157100917,
+      "confusion_matrix": [
+        [
+          3016,
+          316,
+          0,
+          507,
+          0,
+          0
+        ],
+        [
+          328,
+          63,
+          0,
+          37,
+          0,
+          0
+        ],
+        [
+          128,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          226,
+          275,
+          0,
+          4,
+          0,
+          0
+        ],
+        [
+          47,
+          0,
+          0,
+          3,
+          0,
+          0
+        ],
+        [
+          50,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "per_class": {
+        "BENIGN": {
+          "precision": 0.794729907773386,
+          "recall": 0.7856212555352956,
+          "f1": 0.7901493319360755,
+          "support": 3839
+        },
+        "DDoS": {
+          "precision": 0.0963302752293578,
+          "recall": 0.14719626168224298,
+          "f1": 0.11645101663585952,
+          "support": 428
+        },
+        "PortScan": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 128
+        },
+        "DoS": {
+          "precision": 0.007259528130671506,
+          "recall": 0.007920792079207921,
+          "f1": 0.007575757575757576,
+          "support": 505
+        },
+        "WebAttack": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        },
+        "Other": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        }
+      }
+    },
+    {
+      "name": "agent_PortScan",
+      "id": 1,
+      "focus": "PortScan",
+      "accuracy": 0.577,
+      "macro_f1": 0.0,
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "kappa": 0.07878035222735229,
+      "detection_rate": 0.48320413436692505,
+      "false_alarm_rate": 0.24850221411825996,
+      "mean_reward": 0.24227998867705464,
+      "confusion_matrix": [
+        [
+          2885,
+          0,
+          805,
+          0,
+          149,
+          0
+        ],
+        [
+          182,
+          0,
+          0,
+          0,
+          246,
+          0
+        ],
+        [
+          128,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          226,
+          0,
+          5,
+          0,
+          274,
+          0
+        ],
+        [
+          40,
+          0,
+          10,
+          0,
+          0,
+          0
+        ],
+        [
+          24,
+          0,
+          26,
+          0,
+          0,
+          0
+        ]
+      ],
+      "per_class": {
+        "BENIGN": {
+          "precision": 0.8278335724533716,
+          "recall": 0.75149778588174,
+          "f1": 0.787820862916439,
+          "support": 3839
+        },
+        "DDoS": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 428
+        },
+        "PortScan": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 128
+        },
+        "DoS": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 505
+        },
+        "WebAttack": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        },
+        "Other": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        }
+      }
+    },
+    {
+      "name": "agent_DoS",
+      "id": 2,
+      "focus": "DoS",
+      "accuracy": 0.562,
+      "macro_f1": 0.012949342503263605,
+      "macro_precision": 0.009942967085824228,
+      "macro_recall": 0.02625309405940594,
+      "kappa": -0.11662227370808317,
+      "detection_rate": 0.06546080964685616,
+      "false_alarm_rate": 0.2753321177389945,
+      "mean_reward": 0.16305998905599117,
+      "confusion_matrix": [
+        [
+          2782,
+          0,
+          554,
+          503,
+          0,
+          0
+        ],
+        [
+          428,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          115,
+          0,
+          13,
+          0,
+          0,
+          0
+        ],
+        [
+          478,
+          0,
+          12,
+          15,
+          0,
+          0
+        ],
+        [
+          40,
+          0,
+          10,
+          0,
+          0,
+          0
+        ],
+        [
+          24,
+          0,
+          5,
+          21,
+          0,
+          0
+        ]
+      ],
+      "per_class": {
+        "BENIGN": {
+          "precision": 0.7194207395914145,
+          "recall": 0.7246678822610054,
+          "f1": 0.7220347780949908,
+          "support": 3839
+        },
+        "DDoS": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 428
+        },
+        "PortScan": {
+          "precision": 0.021885521885521887,
+          "recall": 0.1015625,
+          "f1": 0.036011080332409975,
+          "support": 128
+        },
+        "DoS": {
+          "precision": 0.027829313543599257,
+          "recall": 0.0297029702970297,
+          "f1": 0.028735632183908046,
+          "support": 505
+        },
+        "WebAttack": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        },
+        "Other": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        }
+      }
+    },
+    {
+      "name": "agent_WebAttack",
+      "id": 3,
+      "focus": "WebAttack",
+      "accuracy": 0.73,
+      "macro_f1": 0.0,
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "kappa": 0.09519657960178995,
+      "detection_rate": 0.22136089577950044,
+      "false_alarm_rate": 0.04923157072154207,
+      "mean_reward": 0.5656399925149977,
+      "confusion_matrix": [
+        [
+          3650,
+          0,
+          188,
+          0,
+          0,
+          1
+        ],
+        [
+          244,
+          0,
+          184,
+          0,
+          0,
+          0
+        ],
+        [
+          128,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          432,
+          0,
+          73,
+          0,
+          0,
+          0
+        ],
+        [
+          50,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          50,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "per_class": {
+        "BENIGN": {
+          "precision": 0.8014931927975406,
+          "recall": 0.950768429278458,
+          "f1": 0.869772429405457,
+          "support": 3839
+        },
+        "DDoS": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 428
+        },
+        "PortScan": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 128
+        },
+        "DoS": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 505
+        },
+        "WebAttack": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        },
+        "Other": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        }
+      }
+    },
+    {
+      "name": "agent_DDoS_2",
+      "id": 4,
+      "focus": "DDoS",
+      "accuracy": 0.1706,
+      "macro_f1": 0.015030303030303033,
+      "macro_precision": 0.008563535911602211,
+      "macro_recall": 0.061386138613861385,
+      "kappa": -0.09431305533682782,
+      "detection_rate": 0.6640826873385013,
+      "false_alarm_rate": 0.8181818181818182,
+      "mean_reward": -0.8091600276507437,
+      "confusion_matrix": [
+        [
+          698,
+          0,
+          0,
+          3121,
+          4,
+          16
+        ],
+        [
+          255,
+          0,
+          0,
+          137,
+          21,
+          15
+        ],
+        [
+          0,
+          0,
+          0,
+          128,
+          0,
+          0
+        ],
+        [
+          114,
+          86,
+          0,
+          155,
+          143,
+          7
+        ],
+        [
+          0,
+          0,
+          0,
+          50,
+          0,
+          0
+        ],
+        [
+          21,
+          0,
+          0,
+          29,
+          0,
+          0
+        ]
+      ],
+      "per_class": {
+        "BENIGN": {
+          "precision": 0.6415441176470589,
+          "recall": 0.18181818181818182,
+          "f1": 0.28333671605439414,
+          "support": 3839
+        },
+        "DDoS": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 428
+        },
+        "PortScan": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 128
+        },
+        "DoS": {
+          "precision": 0.04281767955801105,
+          "recall": 0.3069306930693069,
+          "f1": 0.07515151515151516,
+          "support": 505
+        },
+        "WebAttack": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        },
+        "Other": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 50
+        }
+      }
+    }
+  ],
+  "vote": {
+    "accuracy": 0.645,
+    "macro_precision": 0.023753929052537044,
+    "macro_recall": 0.005972055149440178,
+    "macro_f1": 0.00901080876477268,
+    "weighted_f1": 0.6176154990798796,
+    "kappa": -0.02418401384350589,
+    "detection_rate": 0.14900947459086994,
+    "false_alarm_rate": 0.1635842667361292,
+    "per_class": {
+      "BENIGN": {
+        "precision": 0.7647058823529411,
+        "recall": 0.8364157332638708,
+        "f1": 0.7989549639213736,
+        "support": 3839
+      },
+      "DDoS": {
+        "precision": 0.08823529411764706,
+        "recall": 0.014018691588785047,
+        "f1": 0.024193548387096774,
+        "support": 428
+      },
+      "PortScan": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 128
+      },
+      "DoS": {
+        "precision": 0.030534351145038167,
+        "recall": 0.015841584158415842,
+        "f1": 0.020860495436766626,
+        "support": 505
+      },
+      "WebAttack": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 50
+      },
+      "Other": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 50
+      }
+    },
+    "confusion_matrix": [
+      [
+        3211,
+        13,
+        359,
+        254,
+        2,
+        0
+      ],
+      [
+        416,
+        6,
+        6,
+        0,
+        0,
+        0
+      ],
+      [
+        128,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        359,
+        49,
+        0,
+        8,
+        89,
+        0
+      ],
+      [
+        40,
+        0,
+        10,
+        0,
+        0,
+        0
+      ],
+      [
+        45,
+        0,
+        5,
+        0,
+        0,
+        0
+      ]
+    ],
+    "binary_confusion_matrix": [
+      [
+        3211,
+        628
+      ],
+      [
+        988,
+        173
+      ]
+    ],
+    "mean_reward": 0.1006719868336618
+  },
+  "detector": {
+    "f1": 0.5842391304347825,
+    "detection_rate": 0.5555555555555556,
+    "false_alarm_rate": 0.10471476947121647,
+    "precision": 0.6160458452722063,
+    "recall": 0.5555555555555556,
+    "mean_score": 0.40766277472972867
+  },
+  "labels": [
+    "BENIGN",
+    "DDoS",
+    "PortScan",
+    "DoS",
+    "WebAttack",
+    "Other"
+  ]
+}

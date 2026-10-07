@@ -111,10 +111,34 @@
 |---|---|---|
 | 检测器对比表 | `results/detector_comparison.md` | ★ 四种机制同口径主表（替换旧 docx 表 5.1） |
 | 机器可读结果 | `results/detector_comparison.json` | 上表的原始数字，含全部口径与配置 |
+| 逐攻击反应 + 失败归因 | `results/policy_sweep.{md,json}` | 逐类告警率/分数分布、四类互斥失败分解、已有 MADDPG 产物对照 |
+| **报告章节** | `results/method_analysis.md`（+ `.docx`） | ★ 可直接贴进报告的第 5 章：成功率定义与数值、整体表现、逐攻击反应、横向对比、成败归因、场景选型、"还答不了什么" |
 | 各机制单测结果 | `results/<detector>_only/` | 每个检测器的 ROC 图、分数分布、落盘检测器 |
 | 策略训练产物 | `results/<detector>/` | MADDPG 权重 / history / eval |
+| 旧口径策略产物 | `results/_legacy_platform/` | 合并前 `safenetwork/.../outputs/` 的逐字节拷贝，**只可对旧 docx 表 5.1** |
 
-生成方式：`python scripts/eval_all_detectors.py`（一条命令产出上表）。
+生成方式：
+
+```powershell
+python scripts/eval_all_detectors.py        # 检测器对比表
+python scripts/eval_policy_sweep.py         # 逐攻击反应 + 失败归因
+python scripts/md_to_docx.py                # 报告章节 docx
+python scripts/verify_report_numbers.py     # 核对报告数字与 JSON 源（170 项）
+```
+
+### 5.1 「成功率」的定义（v1 补充）
+
+原协议**没有定义「成功率」**（`src/utils/metrics.py` 的 docstring 里出现过
+`success_rate` 但无实现）。统一为：
+
+* **机制层成功率** = 该类攻击样本中被检测器告警的比例（≡ 该类 recall）。
+  **报告主口径**，不含类别判定。
+* **端到端成功率** = 告警 **且** 攻击类别判定正确，只在攻击样本上统计。
+  当前检测器**只输出二值告警、不输出类别**，故该值只能由兜底规则给出，
+  **仅作下界**，不得当机制层能力引用。
+* **退化下界** = 恒判 BENIGN，其成功率按定义恒为 0。
+
+引用「成功率」时必须同时给出用的是哪一条定义。
 
 ---
 
@@ -124,7 +148,7 @@
 |---|---|---|---|
 | 1 | **带符号 embedding vs `normalize_obs` 裁剪** | `INTERFACE.md` §2.2 要求 embedding 放"偏离方向"（带符号），§3.3 又把整行观测裁到 `[0,1]` → 负号被吃掉，契约自相矛盾 | 二选一：① 观测只对 `[0:feat_dim]` 做裁剪，embedding 段用 `tanh` 压缩；② 检测器输出改为非负有向映射。**当前未改代码，默认行为仍是裁剪** |
 | 2 | 端到端对比用哪个 AE | 平台内置 `ae`（64-32/latent 8/原始 MSE/embed 78）与 `ae_paper`（32-16-8/latent 4/逐特征标准化残差/embed 4）是两个模型 | 检测器层面两个都报；**端到端 MADDPG 对比建议用 `ae_paper`**（与 IF/Kalman 口径一致） |
-| 3 | 是否补跑 Kalman / AE / null 的策略训练 | 目前只有 IF 有策略权重 | 必须补，否则"只换检测器"的核心结论没有证据 |
+| 3 | 是否补跑 Kalman / AE / null 的策略训练 | 目前只有 IF 有策略权重；且**已有的 IF 策略也已崩塌**（投票准确率 0.0754、macro-F1 0.0009、Kappa −0.0219、5 个智能体全部塌缩，证据见 `results/_legacy_platform/if/history.json` 与 `results/method_analysis.md` §5.9） | 必须补，否则"只换检测器"的核心结论没有证据。**注意：现有 IF 的数字不能当作 A 方法的能力**，它是训练失败的度量 |
 | 4 | ICPS 融合层如何进平台 | `network` 包 0 处实现 `DetectorBase`；物理量测与 78 维流特征语义不同 | 需要专门设计（融合层输出 3+k 维信号），不在协议 v1 范围内 |
 | 5 | 10 折交叉验证 | `AUTO.pdf` 用 10 折，本项目用跨天单次划分 | 保持跨天划分（更接近真实），但报告中必须写明"未做 10 折"及其理由 |
 
@@ -135,3 +159,4 @@
 | 版本 | 变更 | 依据 |
 |---|---|---|
 | v1 | 建立统一数据包（评估集排除 Monday）；强制区分主/辅阈值口径；统一 `embed_dim=4`；`ae_paper` 正式注册进 `agentenvs.detectors` | `GAP_ANALYSIS.md` §2.1、§2.2、§3 |
+| v1.1 | 补充**「成功率」定义**（§5.1）；把 `results/method_analysis.md` 列为报告章节产物；§6 第 3 条补记"已有 IF 策略已崩塌" | 需求方要求「成功率/每次攻击的反应/横向对比/成败原因」，而原协议无此定义 |
