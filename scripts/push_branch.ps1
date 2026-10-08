@@ -1,6 +1,9 @@
-﻿# 把本地合并结果推成一个新分支（不动远端 main）
+﻿# 把本地合并结果推成一个分支（默认只推分支，不动远端 main）
 #
-# 用途：等拿到 GitHub 写权限后，一条命令完成 —— 重建分支（保证与 master 一致）并推送。
+# 用途：把本地 master 的当前内容重建成一个提交并推送。
+#
+# ⚠️ 2026-10-08 起远端 main 已被快进到合并后的树，不再是"合并前快照"。
+#    本脚本默认仍只推 $Branch；要同步 main 请显式用 -AlsoUpdateMain。
 #
 # 在仓库根用 PowerShell 运行（Windows PowerShell 5.1 与 PowerShell 7 都可以）：
 #
@@ -8,6 +11,7 @@
 #   .\scripts\push_branch.ps1              # 重建 + 推送到 origin
 #   .\scripts\push_branch.ps1 -RebuildOnly
 #   .\scripts\push_branch.ps1 -Remote fork # 推到 fork（先 git remote add fork <url>）
+#   .\scripts\push_branch.ps1 -AlsoUpdateMain   # 额外把 main 快进到同一棵树（非 force）
 #
 # 若被执行策略拦住，用：
 #   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\push_branch.ps1 -DryRun
@@ -16,17 +20,18 @@
 # 会按 GBK 解码，中文注释会显示成乱码并导致语法错误。改动本文件后请保持 BOM。
 #
 # 设计要点
-#   * 分支的**父提交固定为远端 main**，所以在 GitHub 上能直接开 PR、diff 清晰；
+#   * 分支的**父提交固定为远端 $Upstream**，所以在 GitHub 上能直接开 PR、diff 清晰；
 #   * 用 `git commit-tree` 重建提交，**从不切换分支、从不碰工作区**，
 #     避免 checkout 把工作区清掉的意外；
-#   * 只推这一个分支引用，绝不动 `main`。
+#   * 默认只推这一个分支引用；只有显式 -AlsoUpdateMain 才会推 $Upstream。
 param(
     [string]$Remote = "origin",
     [string]$Branch = "merge/netsec-protocol-v1",
     [string]$Source = "master",
     [string]$Upstream = "main",
     [switch]$DryRun,
-    [switch]$RebuildOnly
+    [switch]$RebuildOnly,
+    [switch]$AlsoUpdateMain
 )
 
 $ErrorActionPreference = "Stop"
@@ -53,6 +58,23 @@ try {
     Write-Host "  [警告] fetch 失败（网络？），改用本地缓存的 $Remote/$Upstream" -ForegroundColor Yellow
 }
 $parent = git rev-parse "$Remote/$Upstream"
+
+Head "0b. 是否还有事情可做"
+$srcTree = git rev-parse "$Source^{tree}"
+$upTree = git rev-parse "$Remote/$Upstream^{tree}"
+$brTree = try { git rev-parse "$Remote/$Branch^{tree}" } catch { "(无此分支)" }
+Info "master 树        : $($srcTree.Substring(0,12))"
+Info "$Remote/$Upstream 树 : $($upTree.Substring(0,12))"
+Info "$Remote/$Branch 树 : $(if ($brTree.Length -ge 12) { $brTree.Substring(0,12) } else { $brTree })"
+if ($srcTree -eq $upTree) {
+    # 远端上游已经和本地 master 同一棵树 —— 再"重建"只会制造一个内容相同的空提交。
+    # 2026-10-08 起 main 已被快进，所以这是**正常**状态，不是错误。
+    Head "完成（远端已是同一棵树，无需推送）"
+    Info "远端 $Remote/$Upstream 的内容已与本地 $Source 完全一致。"
+    if ($AlsoUpdateMain) { Info "-AlsoUpdateMain 已指定，但 $Upstream 已经是目标内容，无需再推。" }
+    Info "要改内容请先在本地提交，然后重跑本脚本。"
+    exit 0
+}
 
 Head "1. 重建分支（commit-tree，不碰工作区）"
 $tree = git rev-parse "$Source^{tree}"
@@ -104,6 +126,7 @@ Head "3. 推送"
 if ($DryRun) {
     Info "[-DryRun] 将执行：git push -u $Remote $Branch"
     git push --dry-run -u $Remote $Branch
+    if ($AlsoUpdateMain) { Info "[-DryRun] 并执行：git push $Remote ${Branch}:$Upstream" }
     if ($LASTEXITCODE -ne 0) {
         Write-Host "  [提示] 与远端的 dry-run 校验没成功（多半是网络问题）。" -ForegroundColor Yellow
         Write-Host "         本地分支已经重建完成，上面第 2 节的 diff 就是将要推送的内容。" -ForegroundColor Yellow
@@ -122,5 +145,19 @@ if ($code -ne 0) {
     exit $code
 }
 Head "推送成功"
-Info "分支已推送到 $Remote/$Branch；远端 main 未被改动。"
-Info "开 PR：https://github.com/ZhongRuiYu-mine/NetworkSecurity/compare/main...$Branch"
+Info "分支已推送到 $Remote/$Branch。"
+Info "开 PR：https://github.com/ZhongRuiYu-mine/NetworkSecurity/compare/$Upstream...$Branch"
+
+if ($AlsoUpdateMain) {
+    Head "4. 把 $Upstream 快进到同一棵树（非 force）"
+    git push $Remote "${Branch}:$Upstream"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "  [失败] 推送 $Upstream 失败（exit $LASTEXITCODE）。" -ForegroundColor Yellow
+        Write-Host "         若提示 non-fast-forward，说明远端 $Upstream 有本地没有的提交，" -ForegroundColor Yellow
+        Write-Host "         请先 fetch+合并，不要用 --force。" -ForegroundColor Yellow
+        exit $LASTEXITCODE
+    }
+    Info "$Upstream 已快进到与 $Branch 同一棵树。"
+} else {
+    Info "（未指定 -AlsoUpdateMain，远端 $Upstream 未被改动。）"
+}

@@ -95,9 +95,24 @@ PortScan / WebAttack / 暴力破解在所有重构式与点式方法上几乎全
 
 ## 5. 推送到线上仓库的状态
 
-目标：<https://github.com/ZhongRuiYu-mine/NetworkSecurity>（远端 `main` = `b4cfc87`，3 个提交，24 个文件）
+目标：<https://github.com/ZhongRuiYu-mine/NetworkSecurity>
 
-**推送策略：只进新分支，`main` 不动。**
+**当前状态：远端 `main` 已被快进到合并后的树（不再是合并前的 24 个文件 / 3 个提交）。**
+
+看当前 tip 请用：
+
+```powershell
+git fetch origin --prune; git log --oneline -3 origin/main
+```
+
+推送分两次，两次的策略不同，都留档：
+
+| 次序 | 日期 | 动作 | 远端 `main` |
+|---|---|---|---|
+| ① | 2026-09-23 | 只进新分支 `merge/netsec-protocol-v1` | `b4cfc87`（**未动**） |
+| ② | 2026-10-08 | 把 `main` **快进**到该分支（仓库主人明确要求把报告章节推上 `main`） | `2dbfac1`，随后文档修正提交继续追加 |
+
+### 5.1 第一次推送：只进新分支（`main` 不动）
 
 | 项 | 值 |
 |---|---|
@@ -108,24 +123,48 @@ PortScan / WebAttack / 暴力破解在所有重构式与点式方法上几乎全
 | 相对 `main` 的规模 | 92 files changed, 60929 insertions(+), 254 deletions(-)（含重命名检测：`agentenvs/`→`src/agentenvs/` 等） |
 | 远端文件数 | 93 个，无 >1MB 文件 |
 
-**当前状态：✅ 已推送成功（2026-09-23）**
+**第一次推送：✅ 成功（2026-09-23）**
 
-```
-remote: Create a pull request for 'merge/netsec-protocol-v1' on GitHub by visiting:
-remote:      https://github.com/ZhongRuiYu-mine/NetworkSecurity/pull/new/merge/netsec-protocol-v1
-To https://github.com/ZhongRuiYu-mine/NetworkSecurity
- * [new branch]      merge/netsec-protocol-v1 -> merge/netsec-protocol-v1
+第一次的核验结果：
+
+| 检查 | 结果 |
+|---|---|
+| 远端分支列表 | `main` = `b4cfc87`（**未改动**）、`merge/netsec-protocol-v1` = 本地 tip |
+| 本地 vs 远端 tip | 一致 |
+| 远端分支树 == 本地 `master` 树 | 一致 |
+| 远端 `main` 是否被动过 | **没有** |
+
+### 5.2 第二次推送：按主人要求把 `main` 快进（2026-10-08）
+
+仓库主人明确选择「直接把报告章节推到 `main`」，于是执行：
+
+```powershell
+cd D:\higher\netsec
+git push origin merge/netsec-protocol-v1:main     # 快进，非 force
 ```
 
 核验结果：
 
 | 检查 | 结果 |
 |---|---|
-| 远端分支列表 | `main` = `b4cfc87`（**未改动**）、`merge/netsec-protocol-v1` = 本地 tip |
-| 本地 vs 远端 tip | 一致 |
-| 远端分支树 == 本地 `master` 树 | 一致（`84bf5471…`） |
-| 远端 `main` 是否被动过 | **没有** |
-| 开 PR 地址 | <https://github.com/ZhongRuiYu-mine/NetworkSecurity/pull/new/merge/netsec-protocol-v1> |
+| 推送方式 | `git push origin merge/netsec-protocol-v1:main` |
+| 推送类型 | **快进（fast-forward）**，不是 force —— 旧 `main`（`b4cfc87`）仍是新 `main` 的祖先 |
+| 远端 `main` | `b4cfc87` → `2dbfac1`（2 个新提交，其中一个是四方向合并，一个是报告章节） |
+| 远端 `merge/netsec-protocol-v1` | `2dbfac1`（与 `main` 同点） |
+| 本地 `master` 树 vs 远端 `main` 树 | 一致（`c5ef75fb…`） |
+| 规模 | 106 files changed, 78223 insertions(+), 258 deletions(-)（含重命名检测） |
+
+**回退方式（如果仓库主人要撤回）**：
+
+```powershell
+# 把远端 main 退回合并前（b4cfc87），不删任何东西
+git push origin b4cfc87:main          # 这是 force（历史回退），除非确有必要别做
+# 更稳的做法：只把 main 恢复成旧内容，保留分支继续存在
+git push origin --delete main          # 需仓库主人操作；或直接在网页改默认分支
+```
+
+回退不会丢东西：合并前后两个 tip（`b4cfc87` 与 `2dbfac1`）都还在，分支也在。
+分叉的两个文件另有逐字节备份（`legacy/diverged-from-remote/`）。
 
 ### 推送过程中遇到并解决的两个非代码问题（留档）
 
@@ -146,6 +185,9 @@ cd D:\higher\netsec
 .\scripts\push_branch.ps1             # 按当前 master 重建分支并推送
 ```
 
+> ⚠️ `push_branch.ps1` 是**第一次推送期间**写的（当时只推分支）。现在 `main` 已经
+> 快进到同一棵树，重跑它只会更新分支，不影响 `main`。
+
 手工命令（等价，三条出路任选其一）：
 
 ```powershell
@@ -165,5 +207,6 @@ git push -u fork merge/netsec-protocol-v1
 # 然后从 fork 向 ZhongRuiYu-mine:main 开 PR
 ```
 
-无论哪条路，`main` 都不会被改动；分叉版本的备份也已经在
-`legacy/diverged-from-remote/` 里（见该目录 README 的 3 种恢复方式）。
+权限与网络两个问题都已解决（见上一节），现在 `main` 与分支都在
+`2dbfac1`；分叉版本的备份在 `legacy/diverged-from-remote/`
+（见该目录 README 的 3 种恢复方式）。

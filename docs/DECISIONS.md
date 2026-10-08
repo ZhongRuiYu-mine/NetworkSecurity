@@ -84,14 +84,24 @@
 | 文件数 / 体积 | 24 个 / 0.23 MB |
 | 布局 | 旧布局：`agentenvs/ algorithms/ utils/ docs/` + 顶层 `train.py prepare_data.py verify_pipeline.py README.md` |
 
-### 5.1 推送策略：只进新分支，不动 `main`
+### 5.1 推送策略：先只进新分支；后按主人要求快进 `main`
 
-本次合并的提交全部落在新分支 **`merge/netsec-protocol-v1`**（父提交 = `origin/main`）：
+**第一次（2026-09-23）**：本次合并的提交全部落在新分支 **`merge/netsec-protocol-v1`**
+（父提交 = `origin/main`）：
 
 - **`main` 一个字节都不动** —— 线上那 24 个文件、3 个提交原样保留；
 - 分支的父提交就是 `origin/main`，所以 PR / `git diff origin/main...merge/netsec-protocol-v1`
   能一眼看清"改了哪些、删了哪些、移到哪了"；
 - 要回退就删掉这个分支，`main` 不受影响。
+
+**第二次（2026-10-08）**：仓库主人明确选择「直接把报告章节推到 `main`」，
+于是执行 `git push origin merge/netsec-protocol-v1:main`。
+这是**快进（fast-forward）而非 force** —— 旧 `main`（`b4cfc87`）仍是新 `main` 的祖先，
+历史没被改写，`b4cfc87` 与 `2dbfac1` 两个 tip 都还在。现在 `main` = 分支 = `2dbfac1`。
+
+> 附注：`main` 被快进后，原先"线上版本 = 合并前快照"这个论断不再成立（线上已经是合并后的树）。
+> §5.2 的逐文件比对记录的是**快进之前**的状态，作为"当时有没有丢东西"的证据保留；
+> 分叉的两个文件另在 `legacy/diverged-from-remote/` 有逐字节备份，恢复方式不依赖远端。
 
 ### 5.2 逐文件比对结果（远端 24 个文件 vs 本仓库对应文件，SHA256）
 

@@ -89,15 +89,27 @@ git show origin/main:algorithms/maddpg.py                       > src/algorithms
 
 ### 方式 C：只要回看线上原文件（什么都不改）
 
-线上仓库的 `main` 分支**没有被本次合并改动**（我们的提交只进新分支），
-所以任何时候都能直接访问：
+⚠️ 2026-10-08 之后远端 `main` 已被**快进**到合并后的树（`2dbfac1`），
+**下面的路径在线上已经不存在了**。要回看这两个文件的"线上版本"，
+得按 **commit** 取，不能按分支取：
 
-- <https://github.com/ZhongRuiYu-mine/NetworkSecurity/blob/main/agentenvs/detectors/autoencoder_detector.py>
-- <https://github.com/ZhongRuiYu-mine/NetworkSecurity/blob/main/algorithms/maddpg.py>
+```powershell
+# 合并前的线上版本（b4cfc87 = 快进前的 main）
+git show b4cfc87:agentenvs/detectors/autoencoder_detector.py
+git show b4cfc87:algorithms/maddpg.py
+# 也可以直接看本目录里的逐字节备份
+```
+
+网页版对应地址（把 sha 写进 URL，用提交而不是分支）：
+
+- <https://github.com/ZhongRuiYu-mine/NetworkSecurity/blob/b4cfc87/agentenvs/detectors/autoencoder_detector.py>
+- <https://github.com/ZhongRuiYu-mine/NetworkSecurity/blob/b4cfc87/algorithms/maddpg.py>
 
 ## 建议
 
 1. 请这两个文件的作者确认一下 **`embed_dim` 那一行哪个版本为准**（我倾向本分支的写法，理由见上）。
-2. 若线上版本为准，在新分支上提一个 commit 改回去，别直接改 `main`。
+2. 若线上版本为准，在 `main`（或新分支）上提一个 commit 改回去。
+   注意 `main` 现在已经是合并后的树，改它就是在合并后的布局上改
+   （文件在 `src/agentenvs/detectors/` 下），不再有"别直接改 main"的顾虑。
 3. 其余 22 个文件不需要担心：13 个逐字节一致（只差 Windows checkout 的换行符），
    9 个的差异全部来自本次布局调整（详见 `docs/DECISIONS.md` 第 5 节）。
